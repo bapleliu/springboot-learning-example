@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ import java.util.List;
 
 /**
  * 城市 ES 业务逻辑实现类
- *
+ * <p>
  * Created by bysocket on 07/02/2017.
  */
 @Service
@@ -46,12 +45,18 @@ public class CityESServiceImpl implements CityService {
         // 分页参数
         Pageable pageable = new PageRequest(pageNumber, pageSize);
 
-        // Function Score Query
-        FunctionScoreQueryBuilder functionScoreQueryBuilder = QueryBuilders.functionScoreQuery()
-                .add(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("cityname", searchContent)),
-                    ScoreFunctionBuilders.weightFactorFunction(1000))
-                .add(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("description", searchContent)),
-                        ScoreFunctionBuilders.weightFactorFunction(100));
+//        // Function Score Query
+//        FunctionScoreQueryBuilder functionScoreQueryBuilder = QueryBuilders.functionScoreQuery()
+//                .add(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("cityname", searchContent)),
+//                    ScoreFunctionBuilders.weightFactorFunction(1000))
+//                .add(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("description", searchContent)),
+//                        ScoreFunctionBuilders.weightFactorFunction(100));
+
+        FunctionScoreQueryBuilder functionScoreQueryBuilder =
+                QueryBuilders.functionScoreQuery(
+                        QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("cityname", searchContent))
+                                .should(QueryBuilders.matchQuery("description", searchContent))
+                        , ScoreFunctionBuilders.weightFactorFunction(100));
 
         // 创建搜索 DSL 查询
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
