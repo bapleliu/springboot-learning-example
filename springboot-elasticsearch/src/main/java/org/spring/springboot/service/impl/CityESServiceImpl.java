@@ -1,5 +1,6 @@
 package org.spring.springboot.service.impl;
 
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
@@ -46,17 +47,30 @@ public class CityESServiceImpl implements CityService {
         Pageable pageable = new PageRequest(pageNumber, pageSize);
 
 //        // Function Score Query
+        //方式1 老版本
 //        FunctionScoreQueryBuilder functionScoreQueryBuilder = QueryBuilders.functionScoreQuery()
 //                .add(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("cityname", searchContent)),
 //                    ScoreFunctionBuilders.weightFactorFunction(1000))
 //                .add(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("description", searchContent)),
 //                        ScoreFunctionBuilders.weightFactorFunction(100));
 
-        FunctionScoreQueryBuilder functionScoreQueryBuilder =
-                QueryBuilders.functionScoreQuery(
-                        QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("cityname", searchContent))
-                                .should(QueryBuilders.matchQuery("description", searchContent))
-                        , ScoreFunctionBuilders.weightFactorFunction(100));
+        //方式2
+        FunctionScoreQueryBuilder.FilterFunctionBuilder[] functions = {
+                new FunctionScoreQueryBuilder.FilterFunctionBuilder(
+                        QueryBuilders.matchQuery("cityname", searchContent),
+                        ScoreFunctionBuilders.weightFactorFunction(1000)),
+                new FunctionScoreQueryBuilder.FilterFunctionBuilder(
+                        QueryBuilders.matchQuery("description", searchContent),
+                        ScoreFunctionBuilders.weightFactorFunction(100))
+        };
+        QueryBuilder functionScoreQueryBuilder = QueryBuilders.functionScoreQuery(functions);
+
+        //方式3
+//        FunctionScoreQueryBuilder functionScoreQueryBuilder =
+//                QueryBuilders.functionScoreQuery(
+//                        QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("cityname", searchContent))
+//                                .should(QueryBuilders.matchQuery("description", searchContent))
+//                        , ScoreFunctionBuilders.weightFactorFunction(100));
 
         // 创建搜索 DSL 查询
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
