@@ -27,6 +27,12 @@ public class CityRestController {
     public List<City> searchCity(@RequestParam(value = "pageNumber") Integer pageNumber,
                                  @RequestParam(value = "pageSize", required = false) Integer pageSize,
                                  @RequestParam(value = "searchContent") String searchContent) {
-        return cityService.searchCity(pageNumber,pageSize,searchContent);
+        return cityService.searchCity(pageNumber, pageSize, searchContent);
+    }
+
+    @RequestMapping(value = "api/city/getIkAnalyzeSearchTerms")
+    public List<String> getIkAnalyzeSearchTerms(@RequestParam(value = "searchContent") String searchContent) {
+        List<String> list = cityService.getIkAnalyzeSearchTerms(searchContent);
+        return list;
     }
 }

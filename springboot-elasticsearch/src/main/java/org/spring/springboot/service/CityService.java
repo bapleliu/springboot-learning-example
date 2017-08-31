@@ -2,6 +2,7 @@
 package org.spring.springboot.service;
 
 import org.spring.springboot.domain.City;
+
 import java.util.List;
 
 public interface CityService {
@@ -23,4 +24,11 @@ public interface CityService {
      * @return
      */
     List<City> searchCity(Integer pageNumber, Integer pageSize, String searchContent);
+
+    /**
+     * @param searchContent
+     * @return
+     */
+    public List<String> getIkAnalyzeSearchTerms(String searchContent);
+
 }
